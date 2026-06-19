@@ -378,8 +378,19 @@
   .card-ref {
     font-size: 11px;
     color: var(--text-light);
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     font-weight: 400;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.45;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 300;
   }
   .card-footer {
     display: flex;
@@ -743,6 +754,7 @@ function cardHTML(p) {
         <div class="card-marca">${p.marca}</div>
         <div class="card-name">${p.nombre}</div>
         <div class="card-ref">Ref: ${p.referencia}</div>
+        ${p.descripcion ? `<div class="card-desc">${p.descripcion}</div>` : ''}
         <div class="card-footer">
           <div class="${priceClass}">${priceDisplay}</div>
         </div>
