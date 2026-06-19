@@ -286,14 +286,12 @@
   /* ── PRODUCT GRID ── */
   .product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
-  @media (max-width: 1100px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 780px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 480px) { .product-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .product-grid { grid-template-columns: 1fr; } }
 
-  /* ── PRODUCT CARD ── */
+  /* ── PRODUCT CARD — horizontal layout ── */
   .card {
     background: var(--white);
     border-radius: var(--radius);
@@ -301,8 +299,9 @@
     box-shadow: var(--shadow);
     transition: box-shadow 0.22s ease, transform 0.22s ease;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     position: relative;
+    min-height: 180px;
   }
   .card:hover {
     box-shadow: var(--shadow-hover);
@@ -310,14 +309,17 @@
   }
   .card.agotado { opacity: 0.65; }
 
+  /* Left: square photo */
   .card-img-wrap {
-    aspect-ratio: 1;
+    width: 180px;
+    flex-shrink: 0;
     background: var(--beige-light);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    flex-shrink: 0;
+    position: relative;
   }
   .card-img-wrap img {
     width: 100%; height: 100%;
@@ -330,23 +332,26 @@
     align-items: center;
     justify-content: center;
     color: var(--taupe);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.05em;
     text-align: center;
-    padding: 16px;
+    padding: 12px;
     text-transform: uppercase;
   }
 
-  /* Color variant dots */
+  /* Color variant dots — inside image area, bottom */
   .color-dots {
     display: flex;
     gap: 5px;
-    padding: 6px 12px 0;
+    padding: 6px 8px;
     flex-wrap: wrap;
+    justify-content: center;
+    background: rgba(255,255,255,0.85);
+    width: 100%;
   }
   .color-dot {
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     border-radius: 50%;
     border: 2px solid var(--beige-mid);
     cursor: pointer;
@@ -358,49 +363,53 @@
   .color-dot.active { border-color: var(--taupe-dark); }
   .color-dot img { width: 100%; height: 100%; object-fit: cover; }
 
-  .card-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+  /* Right: info */
+  .card-body {
+    padding: 16px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
   .card-marca {
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--taupe);
-    margin-bottom: 4px;
+    margin-bottom: 5px;
   }
   .card-name {
-    font-size: 13px;
-    font-weight: 400;
+    font-size: 14px;
+    font-weight: 500;
     color: var(--text);
     line-height: 1.35;
-    flex: 1;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
   .card-ref {
     font-size: 11px;
     color: var(--text-light);
-    margin-bottom: 6px;
+    margin-bottom: 10px;
     font-weight: 400;
   }
   .card-desc {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--text-mid);
-    line-height: 1.45;
-    margin-bottom: 10px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    line-height: 1.55;
+    margin-bottom: 14px;
     font-weight: 300;
+    flex: 1;
   }
   .card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: auto;
     gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--beige-mid);
   }
   .card-price {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     color: var(--taupe-dark);
   }
@@ -423,14 +432,22 @@
   .badge-agotado { background: #fdecea; color: var(--badge-out); }
   .badge-nuevo { background: #fef6e4; color: var(--badge-new); }
 
-  /* Top-right badge on card */
+  /* Badges inside card-body (top right) */
   .card-top-badges {
     position: absolute;
-    top: 8px; right: 8px;
+    top: 10px; right: 10px;
     display: flex;
     flex-direction: column;
     gap: 4px;
     align-items: flex-end;
+    z-index: 1;
+  }
+
+  /* Mobile: collapse to vertical */
+  @media (max-width: 600px) {
+    .card { flex-direction: column; min-height: unset; }
+    .card-img-wrap { width: 100%; height: 200px; }
+    .card-body { padding: 14px; }
   }
 
   /* ── EMPTY STATE ── */
@@ -747,11 +764,15 @@ function cardHTML(p) {
 
   const descHTML = p.descripcion ? '<div class="card-desc">' + p.descripcion + '</div>' : '';
 
-  return `
+    return `
     <div class="card${p.agotado ? ' agotado' : ''}">
       <div class="card-top-badges">${badges}</div>
-      <div class="card-img-wrap">${imgEl}</div>
-      ${colorDotsHTML}
+      <div class="card-img-wrap">
+        <img src="${mainImg}" alt="${p.nombre}"
+          onerror="this.parentElement.innerHTML='<div class=\'card-img-placeholder\'>${p.referencia}</div>'"
+          id="img-${p.referencia}" style="display:block">
+        ${colorDotsHTML}
+      </div>
       <div class="card-body">
         <div class="card-marca">${p.marca}</div>
         <div class="card-name">${p.nombre}</div>
